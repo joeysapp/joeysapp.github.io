@@ -11,7 +11,7 @@ $(document).ready(e => {
       setInterval(() => {
         $('#boartusk').append(book[line_idx][char_idx]);
         if (char_idx >= book[line_idx].length){
-           $('#boartusk').append(line_idx < 5 ? '<br>' : ' ');
+           $('#boartusk').append(line_idx <= 5 ? '<br>' : ' ');
           char_idx = 0;
           line_idx++;
         } else {
