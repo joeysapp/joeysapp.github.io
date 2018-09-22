@@ -30,6 +30,10 @@ $(document).ready(e => {
         txt = div.html();
         newtxt = ''
         for (var i = 0; i < txt.length; i++){
+          if (txt[i] === ' '){
+            newtxt += ' '
+            continue;
+          }
           if (Math.random() > 0.99){
             c = Math.random();
             if (c > 0.90 && !emojid[i]){
