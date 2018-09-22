@@ -41,7 +41,7 @@ $(document).ready(e => {
 
             }
           } else {
-            newtxt += String.fromCharCode((txt[i].charCodeAt()) + 0);
+            newtxt += String.fromCharCode((txt[i].charCodeAt()));
 
           }
         }
