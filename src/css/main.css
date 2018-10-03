@@ -11,6 +11,21 @@ h1 {
   margin: 0;
 }
 
+button {
+  border-radius: 1em;
+  width: 3em;
+  height: 3em;
+}
+
+.btn {
+
+  border-radius: 50% !important;
+}
+
+#header {
+  display: flex;
+}
+
 #content {
   margin: auto;
   height: 60vh;
@@ -27,15 +42,15 @@ h1 {
 }
 
 #container {
-  padding-top: 1em;
   width: 100%;
-  height: 87.5%;
   text-align: left;
   /*line-height: 4vmin;*/
   line-height: 14px;
-  font-size: 18px;
+  font-size: 14px;
   word-wrap: break-word;
   white-space:pre-wrap;
+      line-height: 11px;
+    column-width: 2px;
 
 }
 
