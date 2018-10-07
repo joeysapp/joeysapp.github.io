@@ -1,6 +1,6 @@
 $(document).ready(e => {
 
-  let divx = divy = 25.;
+  let divx = divy = 512.;
 
   $('#inc').click(e => {
     divx += 32;
@@ -20,6 +20,8 @@ $(document).ready(e => {
   var s = function(p){
 
     p.setup = function(){
+      console.log(emojis.length, emojis[0]);
+
       let t = navigator.userAgent;
       let time = 0;
       let canvas = p.createCanvas(0, 0);
@@ -34,17 +36,20 @@ $(document).ready(e => {
       setInterval(e => {
         t = '';
 
-        for (var y = 0; y < Math.floor((window.innerHeight)/41); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/38); x++){
-            var n = noise.perlin3(x/divx, y/divy, time);
-            t += emojis[Math.floor(fmap(n, -1, 1, 0, emojis.length))];
+        for (var y = 0; y < Math.floor((window.innerHeight)/50); y++){
+          for (var x = 0; x < Math.floor((window.innerWidth)/42); x++){
+            // var n = noise.perlin3(x/divx, y/divy, time);
+            var vx = (x)/divx + 4.*Math.cos(x/256.);
+            var vy = (y)/divy + 4.*Math.sin(y/256.);
+            var n = noise.perlin3(vx, vy, time);
+            t += emojis[Math.floor(fmap(n, -1, 1, 0, emojis.length-1))];
           }
 
           t += '\n'
         }
         div.text(t);
-        time += 0.0001;
-      }, 25);
+        time += 0.001;
+      }, 64);
 
     };
 
