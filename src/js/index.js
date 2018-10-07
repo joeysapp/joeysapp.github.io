@@ -1,6 +1,6 @@
 $(document).ready(e => {
 
-  let divx = divy = 128.;
+  let divx = divy = 25.;
 
   $('#inc').click(e => {
     divx += 32;
@@ -34,15 +34,16 @@ $(document).ready(e => {
       setInterval(e => {
         t = '';
 
-        for (var y = 0; y < Math.floor((window.innerHeight)/28); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/44); x++){
-            var n = noise.perlin3(x/divx + divx/32., y/divy + divy/32., time);
+        for (var y = 0; y < Math.floor((window.innerHeight)/41); y++){
+          for (var x = 0; x < Math.floor((window.innerWidth)/38); x++){
+            var n = noise.perlin3(x/divx, y/divy, time);
             t += emojis[Math.floor(fmap(n, -1, 1, 0, emojis.length))];
           }
+
           t += '\n'
         }
         div.text(t);
-        time += 0.001;
+        time += 0.0001;
       }, 25);
 
     };
