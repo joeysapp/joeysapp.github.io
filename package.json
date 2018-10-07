@@ -1,0 +1,24 @@
+{
+  "name": "joeysapp.github.io",
+  "version": "1.0.0",
+  "description": "Personal website",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeysapp/joeysapp.github.io.git"
+  },
+  "author": "Joey Sapp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joeysapp/joeysapp.github.io/issues"
+  },
+  "homepage": "https://github.com/joeysapp/joeysapp.github.io#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "path": "^0.12.7"
+  }
+}
