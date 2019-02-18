@@ -1,7 +1,5 @@
 $(document).ready(e => {
 
-  let divx = divy = 512.;
-
   $('#inc').click(e => {
     divx += 32;
     divy += 32;
@@ -31,25 +29,25 @@ $(document).ready(e => {
       noise.seed(Math.floor(Math.random()*65536));
 
       var div = $(`<div>${t}</div>`);
-      $('#container').append(div);
+      $('#id').append(div);
+
+      var div_hash = '';
+
+      for (var i = 0; i < t.length; i++){
+        div_hash += emojis[t[i].charCodeAt(0)%emojis.length];
+
+      }
+
+
+      $('#id-hash').append(div_hash);
+
 
       setInterval(e => {
-        t = '';
 
-        for (var y = 0; y < Math.floor((window.innerHeight)/50); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/42); x++){
-            // var n = noise.perlin3(x/divx, y/divy, time);
-            var vx = (x)/divx + 4.*Math.cos(x/256.);
-            var vy = (y)/divy + 4.*Math.sin(y/256.);
-            var n = noise.perlin3(vx, vy, time);
-            t += emojis[Math.floor(fmap(n, -1, 1, 0, emojis.length-1))];
-          }
-
-          t += '\n'
-        }
+        
         div.text(t);
         time += 0.001;
-      }, 64);
+      }, 640);
 
     };
 
