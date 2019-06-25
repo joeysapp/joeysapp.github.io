@@ -42,8 +42,8 @@ button {
   width: 100%;
   text-align: center;
   word-break: break-all;
-  line-height: 32px;
-  font-size: 32px;
+  line-height: 24px;
+  font-size: 24px;
   white-space:pre-wrap;
   padding-top: 3vmin;
 }
@@ -58,4 +58,12 @@ button {
   
 }
 
+#r {
+  display: flex;
+}
+
+#divisor {
+
+  
+}
 
