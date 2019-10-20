@@ -1,10 +1,15 @@
+@font-face {
+  font-family: 'incons';
+  src: url('../data/incons.ttf') format('truetype');
+
+}
+
 body, html {
   margin: 0;
   padding: 0;
-  /*font-family: Inconsolata;*/
-  background-color: rgb(41, 41, 41) !important;
-  box-sizing: border-box;
-  overflow: hidden;
+  font-family: 'incons';
+  background-color: rgb(81, 128, 156) !important;
+  /*overflow: hidden;*/
 }
 
 h1 {
@@ -13,29 +18,46 @@ h1 {
 
 button {
   border-radius: 1em;
-  width: 3em;
-  height: 3em;
+  width: 1em;
+  height: 1em;
 }
 
 .btn {
   border-radius: 50% !important;
 }
 
-#header {
+#urls {
   display: flex;
+  height: auto;
+  color: white;
+
 }
+
+#urls a {
+  width: 100%;
+  color: white;
+  height: 6vmin;
+  line-height: 6vmin;
+  text-align: center;
+   background-color: rgb(81, 128, 156);
+ /*border: 2px blue dotted;*/
+  /*padding: 10px;*/
+  margin: 2vmin;
+
+}
+
 
 #content {
   margin: auto;
 
   overflow: hidden;
   box-sizing: border-box;
-  border: 5px solid black;
-  margin: 5vmin;
+  border: 5px solid white;
+  margin: 2vmin;
   padding: 5vmin;
+  padding-bottom: 0;
   background-color: white;
 
-  height: 90vh;
 }
 
 #container {
@@ -45,25 +67,9 @@ button {
   line-height: 24px;
   font-size: 24px;
   white-space:pre-wrap;
-  padding-top: 3vmin;
+  /*padding-top: 3vmin;*/
 }
 
-#id {
-  font-size: 32px;
-  padding: 1em;
+img {
+  padding: 1vmin;
 }
-#id-hash {
-  font-size: 32px;
-  padding: 1em;
-  
-}
-
-#r {
-  display: flex;
-}
-
-#divisor {
-  
-
-}
-
