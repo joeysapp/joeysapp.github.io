@@ -23,7 +23,8 @@ $(document).ready(e => {
 
     p.preload = function(){
       data = p.loadTable('src/data/fin-geo.csv');
-      globe_img = p.loadImage('src/data/earth.jpg', function(i){ globe_img = i; });
+      // globe_img = p.loadImage('src/data/earth.jpg', function(i){ globe_img = i; });
+      globe_img = p.loadImage('src/data/earth-min.gif', function(i){ globe_img = i; });
     }
 
     p.setup = function(){
