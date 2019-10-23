@@ -1,19 +1,15 @@
 @font-face {
-  font-family: 'incons';
-  src: url('../data/incons.ttf') format('truetype');
+  font-family: incons;
+  src: url(../data/incons.ttf);
 
 }
 
-body, html {
+body {
   margin: 0;
   padding: 0;
-  font-family: 'incons';
-  background-color: rgb(81, 128, 156) !important;
+  font-family: incons !important;
+  background-color: rgb(41, 41, 41) !important;
   /*overflow: hidden;*/
-}
-
-h1 {
-  margin: 0;
 }
 
 button {
@@ -26,50 +22,35 @@ button {
   border-radius: 50% !important;
 }
 
+#header {
+  height: 10vmin;
+}
+
 #urls {
-  display: flex;
-  height: auto;
-  color: white;
-
-}
-
-#urls a {
-  width: 100%;
-  color: white;
-  height: 6vmin;
-  line-height: 6vmin;
   text-align: center;
-   background-color: rgb(81, 128, 156);
- /*border: 2px blue dotted;*/
-  /*padding: 10px;*/
-  margin: 2vmin;
-
-}
-
-
-#content {
   margin: auto;
-
   overflow: hidden;
   box-sizing: border-box;
   border: 5px solid white;
   margin: 2vmin;
-  padding: 5vmin;
-  padding-bottom: 0;
-  background-color: white;
-
+  padding: 2vmin;
+  /*padding-bottom: 0;*/
+  background-color: white;  
 }
 
-#container {
-  width: 100%;
-  text-align: center;
-  word-break: break-all;
-  line-height: 24px;
-  font-size: 24px;
-  white-space:pre-wrap;
-  /*padding-top: 3vmin;*/
+
+
+#prints {
+  margin: auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 5px solid white;
+  margin: 2vmin;
+  padding: 2vmin;
+  background-color: white;  
 }
 
 img {
-  padding: 1vmin;
+  width: 100%;
+  padding: 5vmin;
 }
