@@ -20,7 +20,6 @@ $(document).ready(e => {
     p.windowResized = function(){
       p.resizeCanvas($('#header').innerWidth(), $('#header').innerHeight());
       p.textSize(p.height/2);
-      console.log(p.width);
     }
 
     p.setup = function(){
@@ -47,14 +46,19 @@ $(document).ready(e => {
       p.translate(p.width/2, p.height/2);
       p.fill(255);
       p.noStroke();
-      p.text('Joey Sapp', 0, 0);
+      p.text('joeys pp', 0, -10);
+      p.text('joey a  ', 0, 10);
 
       p.fill(0);
       var c;
       for (var i = 0; i < 1000; i++){
         var c = 255 + 255*Math.sin(p.frameCount/25.0);
         p.stroke(c%255, Math.random()*255, 255);
-        p.point(Math.sin(i)*p.width, Math.sin(i)*p.height);
+
+        var x = (Math.sin(i) * p.width)*Math.random();
+        var y = (Math.cos(i) * p.height)*Math.random();
+
+        p.point(x, y);
         // p.point(p.random(-p.width/2, p.width/2), p.random(-p.height/2, p.height/2));
       }
 
