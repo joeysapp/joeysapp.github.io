@@ -18,7 +18,7 @@ $(document).ready(e => {
       incons = p.loadFont('../src/data/incons.ttf');
     }
     p.windowResized = function(){
-      p.resizeCanvas($('#header').innerWidth(), $('#header').innerHeight());
+      p.resizeCanvas($('#l').innerWidth(), $('#l').innerHeight());
       p.textSize(p.height/2);
     }
 
@@ -27,7 +27,7 @@ $(document).ready(e => {
       let t = navigator.userAgent;
       let foo = navigator;
     
-      let canvas = p.createCanvas($('#header').innerWidth(), $('#header').innerHeight());
+      let canvas = p.createCanvas($('#l').innerWidth(), $('#l').innerHeight());
       // let canvas = p.createCanvas(window.innerWidth/1, window.innerHeight/10);
       p.textFont(incons);
       p.textAlign(p.CENTER, p.CENTER);
@@ -41,28 +41,40 @@ $(document).ready(e => {
     };
 
     p.draw = function(){
-      // p.background(255);
-      p.textSize(p.height/1.5);
+
+      var n = p.noise(p.millis()/1000.0);
+      n = fmap(n, 0, 1, 0, Math.PI*2.0);
+
+      for (var i = 0; i < 1000; i++){
+        var c = 255 + 255*Math.sin(p.frameCount/25.0);
+
+        var x = (p.width)*Math.random();
+        var y = (p.height)*Math.random();
+
+        p.stroke((x/100.0 + y/100.0 + n * 100.0 + c)%255, (n+c)*100.0, 255);
+
+
+
+        p.point(x, y);
+      }
+      p.textSize(p.height/10.0);
       p.translate(p.width/2, p.height/2);
       p.fill(255);
       p.noStroke();
-      p.text('joeys pp', 0, -10);
-      p.text('joey a  ', 0, 10);
+      // p.text('joeys pp', 0, 0);
+
+
+      var x = Math.cos(n)*10.0;
+      var y = Math.sin(n)*10.0;
+      p.fill(255);
+      p.text('joeys pp', -x, -y);
+      p.fill(255);
+      p.text('     a  ', x, y);
 
       p.fill(0);
       var c;
-      for (var i = 0; i < 1000; i++){
-        var c = 255 + 255*Math.sin(p.frameCount/25.0);
-        p.stroke(c%255, Math.random()*255, 255);
 
-        var x = (Math.sin(i) * p.width)*Math.random();
-        var y = (Math.cos(i) * p.height)*Math.random();
 
-        p.point(x, y);
-        // p.point(p.random(-p.width/2, p.width/2), p.random(-p.height/2, p.height/2));
-      }
-
-      p.point(0, 0);
     }
 
     function hashItem(attr){

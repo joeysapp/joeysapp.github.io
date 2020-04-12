@@ -9,6 +9,10 @@ body {
   padding: 0;
   font-family: incons !important;
   background-color: rgb(41, 41, 41) !important;
+  height: 100vmin;
   /*overflow: hidden;*/
 }
 
+#l {
+  height: 100vmax;
+}
