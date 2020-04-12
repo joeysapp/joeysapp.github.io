@@ -54,7 +54,8 @@ $(document).ready(e => {
       for (var i = 0; i < 1000; i++){
         var c = 255 + 255*Math.sin(p.frameCount/25.0);
         p.stroke(c%255, Math.random()*255, 255);
-        p.point(p.random(-p.width/2, p.width/2), p.random(-p.height/2, p.height/2));
+        p.point(math.sin(i)*p.width, math.sin(i)*p.height);
+        // p.point(p.random(-p.width/2, p.width/2), p.random(-p.height/2, p.height/2));
       }
 
       p.point(0, 0);
