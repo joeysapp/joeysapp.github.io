@@ -1,7 +1,5 @@
-server.js
 node_modules
 yarn.lock
-package.json
 
 # Logs
 logs
