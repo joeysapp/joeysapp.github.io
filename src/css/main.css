@@ -45,6 +45,7 @@ button {
   font-size: 24px;
   white-space:pre-wrap;
   padding-top: 3vmin;
+  overflow: overlay;
 }
 
 
