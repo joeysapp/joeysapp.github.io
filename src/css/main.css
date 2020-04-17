@@ -1,7 +1,7 @@
 body, html {
   margin: 0;
   padding: 0;
-  /*font-family: Inconsolata;*/
+  font-family: Inconsolata;
   background-color: rgb(41, 41, 41) !important;
   box-sizing: border-box;
   overflow: hidden;
@@ -13,6 +13,7 @@ h1 {
 
 button {
   border-radius: 1em;
+  margin-right: 1em;
   width: 3em;
   height: 3em;
 }
@@ -27,14 +28,12 @@ button {
 
 #content {
   margin: auto;
-
   overflow: hidden;
   box-sizing: border-box;
   border: 5px solid black;
   margin: 5vmin;
   padding: 5vmin;
   background-color: white;
-
   height: 90vh;
 }
 
@@ -48,22 +47,9 @@ button {
   padding-top: 3vmin;
 }
 
-#id {
-  font-size: 32px;
-  padding: 1em;
-}
-#id-hash {
-  font-size: 32px;
-  padding: 1em;
-  
-}
 
 #r {
   display: flex;
 }
 
-#divisor {
-  
-
-}
 
