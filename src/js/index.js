@@ -67,7 +67,7 @@ $(document).ready(e => {
 
         t = '';
         for (var y = 0; y < Math.floor((window.innerHeight)/40); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/32); x++){
+          for (var x = 0; x < Math.floor((window.innerWidth)/28); x++){
             var n = noise.perlin3(x/divx, y/divy, time);
             // var vx = (x)/divx + 4.*Math.cos(x/256.);
             // var vy = (y)/divy + 4.*Math.sin(y/256.);
