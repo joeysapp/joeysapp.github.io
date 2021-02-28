@@ -69,8 +69,8 @@ $(document).ready(e => {
         cur_y -= 0.0005;
 
         t = '';
-        for (var y = 0; y < Math.floor((window.innerHeight)/18); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/18); x++){
+        for (var y = 0; y < Math.floor((window.innerHeight)/25); y++){
+          for (var x = 0; x < Math.floor((window.innerWidth)/21); x++){
             var n = noise.perlin3((cur_x+x)/divx, (cur_y+y)/divy, time);
             // var vx = (x)/divx + 4.*Math.cos(x/256.);
             // var vy = (y)/divy + 4.*Math.sin(y/256.);
