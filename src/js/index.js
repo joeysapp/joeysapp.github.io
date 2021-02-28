@@ -38,7 +38,7 @@ $(document).ready(e => {
   var s = function(p){
 
     p.setup = function(){
-      console.log(emojis.length, emojis[0]);
+      // console.log(emojis.length, emojis[0]);
 
       let t = navigator.userAgent;
       let time = 0;
@@ -61,14 +61,17 @@ $(document).ready(e => {
 
 
       // $('#container').append(div_hash);
-
+      let cur_x = 0.0;
+      let cur_y = 0.0;
 
       setInterval(e => {
+        cur_x += 0.0025;
+        cur_y -= 0.0005;
 
         t = '';
-        for (var y = 0; y < Math.floor((window.innerHeight)/40); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/40); x++){
-            var n = noise.perlin3(x/divx, y/divy, time);
+        for (var y = 0; y < Math.floor((window.innerHeight)/18); y++){
+          for (var x = 0; x < Math.floor((window.innerWidth)/18); x++){
+            var n = noise.perlin3((cur_x+x)/divx, (cur_y+y)/divy, time);
             // var vx = (x)/divx + 4.*Math.cos(x/256.);
             // var vy = (y)/divy + 4.*Math.sin(y/256.);
             // var vx = (x)/divx + 4.*Math.cos(x/divx);
@@ -79,8 +82,8 @@ $(document).ready(e => {
           t += '\n'
         }
         div.text(t);
-        time += 0.0001;
-      }, 10);
+        time += 0.001;
+      }, 7);
 
     };
 
