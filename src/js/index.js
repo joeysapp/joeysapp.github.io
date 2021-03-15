@@ -73,7 +73,7 @@ $(document).ready(e => {
         cur_y -= 0.0005;
 
         t = '';
-        for (var y = 0; y < Math.floor((window.innerHeight)/8); y++){
+        for (var y = 0; y < Math.floor((window.innerHeight)/9); y++){
           for (var x = 0; x < Math.floor((window.innerWidth)/12); x++){
             // var n = noise.perlin3((cur_x+x)/divx, (cur_y+y)/divy, time);
             var n = simplex.noise3D((cur_x+x)/divx, (cur_y+y)/divy, time);
@@ -87,7 +87,7 @@ $(document).ready(e => {
           t += '\n'
         }
         div.text(t);
-        time += 0.003;
+        time += 0.009;
       }, 7);
 
     };
