@@ -1,109 +1,139 @@
 $(document).ready(e => {
+	let t = 0;
+	let dt = 0.0003;
+	document.getElementById('dtime').innerHTML = `${dt}`;
 
-  let divx = 12;
-  let divy = 12;
+	let seed = 24; // Math.floor(Math.random()*65536);
+  let simplex = new SimplexNoise(seed);
+	let divx = 200;
+	let divy = 200;
 
-  let incTime;
-  let decTime;
+	let pos = [0., 0.];
+	let vel = [0., 0.];
+	let acc = [0., 0.];
+	let acc_lim = 0.01;
+	document.getElementById('div').innerHTML = `${divx}`;
 
+	let emojis = [];
+	src.forEach(e => emojis.push(e));
   $(document).keypress(e => {
+		emojis = [];
+		src.forEach(e => emojis.push(e));
     shuffle(emojis);
+		//emojis = emojis.splice(0, 128);
+
+		seed = Math.floor(Math.random()*65536);
+    simplex = new SimplexNoise(seed);
+
+		pos = [0, 0];
+		vel = [0, 0];
+  });
+
+	// noise div
+	let incDivInt = null;
+	let decDivInt = null;
+  $('#incDiv').mousedown(e => {
+    clearInterval(decDivInt);
+    clearInterval(incDivInt);
+
+		const goal = divx * 2;
+    incDivInt = setInterval(e => {
+			document.getElementById('incDiv').disabled = true;				
+			document.getElementById('decDiv').disabled = true;				
+			if (divx >= goal || divy >= goal) {
+					clearInterval(incDivInt);
+					document.getElementById('incDiv').disabled = false;
+					document.getElementById('decDiv').disabled = false;				
+					return;
+			}
+      divx *= 1.01;
+      divy *= 1.01;
+			const dx = Math.round((divx * 10)/10);
+			const dy = Math.round((divx * 10)/10);
+			document.getElementById("div").innerHTML = `${dx}`;
+    }, 15);
+  });
+
+  $('#decDiv').click(e => {
+    clearInterval(incDivInt);
+    clearInterval(decDivInt);
+
+		const goal = Math.max(1, divx / 2);
+		decDivInt = setInterval(e => {
+			document.getElementById('decDiv').disabled = true;
+			document.getElementById('incDiv').disabled = true;
+			if (divx <= goal || divy <= goal) {
+					clearInterval(decDivInt);
+					document.getElementById('decDiv').disabled = false;
+					document.getElementById('incDiv').disabled = false;				
+					return;
+			}
+	    divx *= 0.99;
+	    divy *= 0.99;
+			const dx = Math.round((divx * 10)/10);
+			const dy = Math.round((divx * 10)/10);
+			document.getElementById("div").innerHTML = `${dx}`;
+    }, 15);
   })
 
-  $('#inc').mousedown(e => {
-    divx += divx*2;
-    divy += divy*2;
-    // clearInterval(decTime);
-    // incTime = setInterval(e => {
-    //   divx += 0.5;
-    //   divy += 0.5;
-    //   $('#divisor').text(Math.round(divx*10)/10);
-    // }, 33);
-
-  })
-
-  $('#dec').click(e => {
-    divx -= divx/2;
-    divy -= divy/2;
-    // clearInterval(incTime);
-    // decTime = setInterval(e => {
-    //   divx -= 0.5;
-    //   divy -= 0.5;
-    //   $('#divisor').text(Math.round(divx*10)/10);
-    // }, 33);
-  })
-
-  // var emojis = ['🌎','🌍','🌏','🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔' ];
-  var emojis = ['🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔' ];
-
-
-  var s = function(p){
-
-    p.setup = function(){
-      // console.log(emojis.length, emojis[0]);
-
-      let t = navigator.userAgent;
-      let time = 0;
-      let canvas = p.createCanvas(0, 0);
-
-      canvas.remove()
-
-      noise.seed(Math.floor(Math.random()*65536));
-
-      // var div = $(`<div>butts</div>`);
-      var div = $(`<div>${t}</div>`);
+  const s = (p) => {
+    p.setup = () => {
+      const canvas = p.createCanvas(0, 0).remove();
+			let div = $('<div/>');
       $('#container').append(div);
 
-      var div_hash = '';
-
-      for (var i = 0; i < t.length; i++){
-        div_hash += emojis[t[i].charCodeAt(0)%emojis.length];
-
-      }
-
-      var simplex = new SimplexNoise();
-
-
-      // $('#container').append(div_hash);
-      let cur_x = 0.0;
-      let cur_y = 0.0;
-
+      const ua = navigator.userAgent;
+			let text = '';
+			let height = Math.floor((window.innerHeight)/9);
+			let width =  Math.floor((window.innerWidth)/12);
       setInterval(e => {
-        cur_x += 0.0025;
-        cur_y -= 0.0005;
+				text = '';
+        for (let y = 0; y < height; y++){
+          for (let x = 0; x < width; x++){
+						const nx = (pos[0] + x)/divx;
+						const ny = (pos[1] + y)/divy;
+            // const n = noise.perlin3(nx, ny, t);
+            const n = simplex.noise3D(nx, ny, t);
 
-        t = '';
-        for (var y = 0; y < Math.floor((window.innerHeight)/9); y++){
-          for (var x = 0; x < Math.floor((window.innerWidth)/12); x++){
-            // var n = noise.perlin3((cur_x+x)/divx, (cur_y+y)/divy, time);
-            var n = simplex.noise3D((cur_x+x)/divx, (cur_y+y)/divy, time);
-            // var vx = (x)/divx + 4.*Math.cos(x/256.);
-            // var vy = (y)/divy + 4.*Math.sin(y/256.);
-            // var vx = (x)/divx + 4.*Math.cos(x/divx);
-            // var vy = (y)/divy + 4.*Math.sin(y/divy);
-            // var n = noise.perlin3(vx, vy, time);
-            t += emojis[Math.floor(fmap(n, -1, 1, 0, emojis.length-1))];
+						let emoji_idx = Math.floor(fmap(n, -1, 1, 0, emojis.length-1));
+            text += emojis[emoji_idx];
           }
-          t += '\n'
+          text += '\n';
         }
-        div.text(t);
-        time += 0.009;
+        div.text(text);
+        t += dt;
+
+        let n = simplex.noise3D(pos[0]/divx, pos[1]/divy, dt);
+				n = fmap(n, -1, 1, 0, Math.PI * 2.0);
+				acc[0] = Math.cos(n);
+				acc[1] = Math.sin(n);
+				vel[0] = Math.max(Math.min(vel[0] + acc[0], acc_lim), -acc_lim);
+				vel[1] = Math.max(Math.min(vel[1] + acc[1], acc_lim), -acc_lim);
+				pos[0] += vel[0];
+				pos[1] += vel[1];
+
+				const rx = Math.round(vel[0] * 100)/100.0;
+				const ry = Math.round(vel[1] * 100)/100.0;
+				document.getElementById("vel").innerHTML = `[${rx}, ${ry}]`;
       }, 7);
 
+			setInterval(e => {
+				const rx = Math.round(pos[0] * 100)/100.0;
+				const ry = Math.round(pos[1] * 100)/100.0;
+				document.getElementById("pos").innerHTML = `[${rx}, ${ry}]`;
+			}, 250);
+
     };
-
-   };
-
-  var fmap = function(n, start1, stop1, start2, stop2) {
-    return ((n-start1)/(stop1-start1))*(stop2-start2)+start2;
-};
-
-   var f = new p5(s, 'container'); 
+  };
+	const f = new p5(s, 'container'); 
 });
 
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
+const fmap = (v, vlow, vhigh, low, high) => {
+	return ((v - vlow)/(vhigh - vlow)) * (high - low) + low;
+};
 
+const shuffle = (array) => {
+  let currentIndex = array.length, temporaryValue, randomIndex;
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
 
@@ -116,6 +146,44 @@ function shuffle(array) {
     array[currentIndex] = array[randomIndex];
     array[randomIndex] = temporaryValue;
   }
-
   return array;
 }
+
+
+
+
+
+
+
+
+// emojis down below, beware
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const src = ['🌎','🌍','🌏','🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔' ];
+// const src = ['🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔' ];
+const src = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '🥲', '☺️', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🥸', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '👋', '🤚', '🖐', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦵', '🦿', '🦶', '👣', '👂', '🦻', '👃', '🫀', '🫁', '🧠', '🦷', '🦴', '👀', '👁', '👅', '👄', '💋', '🩸', '👶', '👧', '🧒', '👦', '👩', '🧑', '👨', '🗣', '👤', '👥', '🫂', '🧳', '🌂', '☂️', '🧵', '🪡', '🪢', '🧶', '👓', '🕶', '🥽', '🥼', '🦺', '👔', '👕', '👖', '🧣', '🧤', '🧥', '🧦', '👗', '👘', '🥻', '🩴', '🩱', '🩲', '🩳', '👙', '👚', '👛', '👜', '👝', '🎒', '👞', '👟', '🥾', '🥿', '👠', '👡', '🩰', '👢', '👑', '👒', '🎩', '🎓', '🧢', '⛑', '🪖', '💄', '💍', '💼', '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🪱', '🐛', '🦋', '🐌', '🐞', '🐜', '🪰', '🪲', '🪳', '🦟', '🦗', '🕷', '🕸', '🦂', '🐢', '🐍', '🦎', '🦖', '🦕', '🐙', '🦑', '🦐', '🦞', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', '🐆', '🦓', '🦍', '🦧', '🦣', '🐘', '🦛', '🦏', '🐪', '🐫', '🦒', '🦘', '🦬', '🐃', '🐂', '🐄', '🐎', '🐖', '🐏', '🐑', '🦙', '🐐', '🦌', '🐕', '🐩', '🦮', '🐕', '🐈', '🐈', '🪶', '🐓', '🦃', '🦤', '🦚', '🦜', '🦢', '🦩', '🕊', '🐇', '🦝', '🦨', '🦡', '🦫', '🦦', '🦥', '🐁', '🐀', '🐿', '🦔', '🐾', '🐉', '🐲', '🌵', '🎄', '🌲', '🌳', '🌴', '🪵', '🌱', '🌿', '☘️', '🍀', '🎍', '🪴', '🎋', '🍃', '🍂', '🍁', '🍄', '🐚', '🪨', '🌾', '💐', '🌷', '🌹', '🥀', '🌺', '🌸', '🌼', '🌻', '🌞', '🌝', '🌛', '🌜', '🌚', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌙', '🌎', '🌍', '🌏', '🪐', '💫', '⭐️', '🌟', '✨', '⚡️', '☄️', '💥', '🔥', '🌪', '🌈', '☀️', '🌤', '⛅️', '🌥', '☁️', '🌦', '🌧', '⛈', '🌩', '🌨', '❄️', '☃️', '⛄️', '🌬', '💨', '💧', '💦', '☔️', '☂️', '🌊', '🌫', '🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌶', '🫑', '🌽', '🥕', '🫒', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🧈', '🥞', '🧇', '🥓', '🥩', '🍗', '🍖', '🦴', '🌭', '🍔', '🍟', '🍕', '🫓', '🥪', '🥙', '🧆', '🌮', '🌯', '🫔', '🥗', '🥘', '🫕', '🥫', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱', '🥟', '🦪', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🥮', '🍢', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🌰', '🥜', '🍯', '🥛', '🍼', '🫖', '☕️', '🍵', '🧃', '🥤', '🧋', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾', '🧊', '🥄', '🍴', '🍽', '🥣', '🥡', '🥢', '🧂', '', '⚽️', '🏀', '🏈', '⚾️', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳️', '🪁', '🏹', '🎣', '🤿', '🥊', '🥋', '🎽', '🛹', '🛼', '🛷', '⛸', '🥌', '🎿', '⛷', '🏂', '🪂', '🎭', '🩰', '🎨', '🎬', '🎤', '🎧', '🎼', '🎹', '🥁', '🪘', '🎷', '🎺', '🪗', '🎸', '🪕', '🎻', '🎲', '♟', '🎯', '🎳', '🎮', '🎰', '🧩🚗', '🚕', '🚙', '🚌', '🚎', '🏎', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵', '🏍', '🛺', '🚨', '🚔', '🚍', '🚘', '🚖', '🚡', '🚠', '🚟', '🚃', '🚋', '🚞', '🚝', '🚄', '🚅', '🚈', '🚂', '🚆', '🚇', '🚊', '🚉', '✈️', '🛫', '🛬', '🛩', '💺', '🛰', '🚀', '🛸', '🚁', '🛶', '⛵️', '🚤', '🛥', '🛳', '⛴', '🚢', '⚓️', '🪝', '⛽️', '🚧', '🚦', '🚥', '🚏', '🗺', '🗿', '🗽', '🗼', '🏰', '🏯', '🏟', '🎡', '🎢', '🎠', '⛲️', '⛱', '🏖', '🏝', '🏜', '🌋', '⛰', '🏔', '🗻', '🏕', '⛺️', '🛖', '🏠', '🏡', '🏘', '🏚', '🏗', '🏭', '🏢', '🏬', '🏣', '🏤', '🏥', '🏦', '🏨', '🏪', '🏫', '🏩', '💒', '🏛', '⛪️', '🕌', '🕍', '🛕', '🕋', '⛩', '🛤', '🛣', '🗾', '🎑', '🏞', '🌅', '🌄', '🌠', '🎇', '🎆', '🌇', '🌆', '🏙', '🌃', '🌌', '🌉', '🌁', '⌚️', '📱', '📲', '💻', '⌨️', '🖥', '🖨', '🖱', '🖲', '🕹', '🗜', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽', '🎞', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙', '🎚', '🎛', '🧭', '⏱', '⏲', '⏰', '🕰', '⌛️', '⏳', '📡', '🔋', '🔌', '💡', '🔦', '🕯', '🪔', '🧯', '🛢', '💸', '💵', '💴', '💶', '💷', '🪙', '💰', '💳', '💎', '⚖️', '🪜', '🧰', '🪛', '🔧', '🔨', '⚒', '🛠', '⛏', '🪚', '🔩', '⚙️', '🪤', '🧱', '⛓', '🧲', '🔫', '💣', '🧨', '🪓', '🔪', '🗡', '⚔️', '🛡', '🚬', '⚰️', '🪦', '⚱️', '🏺', '🔮', '📿', '🧿', '💈', '⚗️', '🔭', '🔬', '🕳', '🩹', '🩺', '💊', '💉', '🩸', '🧬', '🦠', '🧫', '🧪', '🌡', '🧹', '🪠', '🧺', '🧻', '🚽', '🚰', '🚿', '🛁', '🛀', '🧼', '🪥', '🪒', '🧽', '🪣', '🧴', '🛎', '🔑', '🗝', '🚪', '🪑', '🛋', '🛏', '🛌', '🧸', '🪆', '🖼', '🪞', '🪟', '🛍', '🛒', '🎁', '🎈', '🎏', '🎀', '🪄', '🪅', '🎊', '🎉', '🎎', '🏮', '🎐', '🧧', '✉️', '📩', '📨', '📧', '💌', '📥', '📤', '📦', '🏷', '🪧', '📪', '📫', '📬', '📭', '📮', '📯', '📜', '📃', '📄', '📑', '🧾', '📊', '📈', '📉', '🗒', '🗓', '📆', '📅', '🗑', '📇', '🗃', '🗳', '🗄', '📋', '📁', '📂', '🗂', '🗞', '📰', '📓', '📔', '📒', '📕', '📗', '📘', '📙', '📚', '📖', '🔖', '🧷', '🔗', '📎', '🖇', '📐', '📏', '🧮', '📌', '📍', '✂️', '🖊', '🖋', '✒️', '🖌', '🖍', '📝', '✏️', '🔍', '🔎', '🔏', '🔐', '🔒', '🔓', '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️', '✝️', '☪️', '🕉', '☸️', '✡️', '🔯', '🕎', '☯️', '☦️', '🛐', '⛎', '♈️', '♉️', '♊️', '♋️', '♌️', '♍️', '♎️', '♏️', '♐️', '♑️', '♒️', '♓️', '🆔', '⚛️', '🉑', '☢️', '☣️', '📴', '📳', '🈶', '🈚️', '🈸', '🈺', '🈷️', '✴️', '🆚', '💮', '🉐', '㊙️', '㊗️', '🈴', '🈵', '🈹', '🈲', '🅰️', '🅱️', '🆎', '🆑', '🅾️', '🆘', '❌', '⭕️', '🛑', '⛔️', '📛', '🚫', '💯', '💢', '♨️', '🚷', '🚯', '🚳', '🚱', '🔞', '📵', '🚭', '❗️', '❕', '❓', '❔', '‼️', '⁉️', '🔅', '🔆', '〽️', '⚠️', '🚸', '🔱', '⚜️', '🔰', '♻️', '✅', '🈯️', '💹', '❇️', '✳️', '❎', '🌐', '💠', 'Ⓜ️', '🌀', '💤', '🏧', '🚾', '♿️', '🅿️', '🛗', '🈳', '🈂️', '🛂', '🛃', '🛄', '🛅', '🚹', '🚺', '🚼', '⚧', '🚻', '🚮', '🎦', '📶', '🈁', '🔣', 'ℹ️', '🔤', '🔡', '🔠', '🆖', '🆗', '🆙', '🆒', '🆕', '🆓', '0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '🔢', '#️⃣', '*️⃣', '⏏️', '▶️', '⏸', '⏯', '⏹', '⏺', '⏭', '⏮', '⏩', '⏪', '⏫', '⏬', '◀️', '🔼', '🔽', '➡️', '⬅️', '⬆️', '⬇️', '↗️', '↘️', '↙️', '↖️', '↕️', '↔️', '↪️', '↩️', '⤴️', '⤵️', '🔀', '🔁', '🔂', '🔄', '🔃', '🎵', '🎶', '➕', '➖', '➗', '✖️', '♾', '💲', '💱', '™️', '©️', '®️', '〰️', '➰', '➿', '🔚', '🔙', '🔛', '🔝', '🔜', '✔️', '☑️', '🔘', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫️', '⚪️', '🟤', '🔺', '🔻', '🔸', '🔹', '🔶', '🔷', '🔳', '🔲', '▪️', '▫️', '◾️', '◽️', '◼️', '◻️', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '⬛️', '⬜️', '🟫', '🔈', '🔇', '🔉', '🔊', '🔔', '🔕', '📣', '📢', '👁', '💬', '💭', '🗯', '♠️', '♣️', '♥️', '♦️', '🃏', '🎴', '🀄️', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚', '🕛', '🕜', '🕝', '🕞', '🕟', '🕠', '🕡', '🕢', '🕣', '🕤', '🕥', '🕦', '🕧🏳️', '🏴', '🏁', '🚩', '🏳', '🏳️', '🏴', '🥲', '🥸', '🎄', '🫂', '🐈', '🦬', '🦣', '🦫', '🐻', '🦤', '🪶', '🦭', '🪲', '🪳', '🪰', '🪱', '🪴', '🫐', '🫒', '🫑', '🫓', '🫔', '🫕', '🫖', '🧋', '🪨', '🪵', '🛖', '🛻', '🛼', '🪄', '🪅', '🪆', '🪡', '🪢', '🩴', '🪖', '🪗', '🪘', '🪙', '🪃', '🪚', '🪛', '🪝', '🪜', '🛗', '🪞', '🪟', '🪠', '🪤', '🪣', '🪥', '🪦', '🪧', '🏳'];
