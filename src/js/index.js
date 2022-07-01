@@ -1,9 +1,15 @@
+/* todo:
+make a finite state machine/walker,
+"oh go left, oh go right, oh speed up, oh change div, oh change speed"
+remove all libs
+*/
+
 $(document).ready(e => {
   let emojis = [];
   src.forEach(e => emojis.push(e));
 
   let t = Math.PI;
-  let dt = 0.000005;
+  let dt = 0.000001;
   let _dt = dt;
   let dt_ceil = 1;
   // document.getElementById('dtime').innerHTML = `${dt}`;
@@ -20,18 +26,18 @@ $(document).ready(e => {
   let _acc_lim = acc_lim;
   let acc_ceil = 10;
 
-  let pos = [Math.PI, Math.PI];
+  let pos = [12., -3.];
   let vel = [acc_lim, acc_lim];
   let acc = [acc_lim, acc_lim];
 
-  constShift = setInterval(() => {
+  const shiftInterval = setInterval(() => {
     const shiftInt = setInterval(() => {
       if (acc_lim < 0.0001) {
         let n = simplex.noise2D(t, 0);
         n = fmap(n, -1, 1, 0, Math.PI * 2.0);
         shiftAmt = Math.ceil(fmap(Math.cos(n), -1, 1, 1, 5));
         for (let i = 0; i < shiftAmt; i++) {
-          emojis.unshift(emojis.pop());
+          //emojis.unshift(emojis.pop());
         }
       }
     }, 25);
@@ -43,9 +49,9 @@ $(document).ready(e => {
   const changeDiv = setInterval(() => {
     let n = simplex.noise2D(t, 0);
     n = fmap(n, -1, 1, 0, Math.PI * 2.0);
-    divx = fmap(Math.cos(n), -1, 1, 200, 1000);
-    divy = fmap(Math.cos(n), -1, 1, 200, 1000);
-  }, 25);
+    divx = fmap(Math.cos(n), -1, 1, 8, 200);
+    divy = fmap(Math.cos(n), -1, 1, 8, 200);
+  }, 12);
 
   const incSpd = setInterval(() => {
     const inc = setInterval(() => {
@@ -53,6 +59,8 @@ $(document).ready(e => {
       dt = dt > dt_ceil ? dt_ceil : dt;
       acc_lim *= incD;
       acc_lim = acc_lim > acc_ceil ? acc_ceil : acc_lim;
+      //emojis.unshift(emojis.pop()); // put last elem to front
+      emojis.push(emojis.shift()); // put first elm to last
     }, incT);
 
     const cancelInc = setTimeout(() => {
@@ -64,11 +72,10 @@ $(document).ready(e => {
   const shuffleInt = setInterval(() => {
     // emojis = [];
     // src.forEach(e => emojis.push(e));
-    // shuffle(emojis);
     //emojis = emojis.splice(0, 128);
     
-    seed = Math.floor(Math.random()*65536);
-    simplex = new SimplexNoise(seed);
+    //seed = Math.floor(Math.random()*65536);
+    // simplex = new SimplexNoise(seed);
     
     // pos = [0, 0];
     // vel = [0, 0];
