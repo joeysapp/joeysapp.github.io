@@ -1,73 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta >
-  <meta
-    charset='utf-8'
-    content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
-    name='viewport' 
-  >
-  <script src='src/js/jquery-3.3.1.min.js'></script>
-  <script src='src/js/jquery-ui.min.js'></script>
-  <script src='src/js/p5.min.js'></script>
-  <script src='src/js/p5.dom.min.js'></script>
-  <script src='src/js/bootstrap.bundle.js'></script>
-  <script src='src/js/perlin.js'></script>
-  <script src='src/js/simplex.js'></script>
-  <title>joeysapp.github.io</title>
-  <link rel="icon" href="favicon.ico" type="image/ico" sizes="16x16">
-  <link rel='stylesheet' href='src/css/main.css' type='text/css'>
-  <link rel='stylesheet' href='src/css/bootstrap.css' type='text/css'>
-  <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Inconsolata' type='text/css'>
-</head>
+  <head>
+    <meta>
+    <meta
+      charset='utf-8'
+      content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+      name='viewport' 
+    >
+    <script src='src/js/perlin.js'></script>
+    <script src='src/js/simplex.js'></script>
+    <title>joeysapp.github.io</title>
+    <link rel="icon" href="favicon.ico" type="image/ico" sizes="16x16">
+    <link rel='stylesheet' href='src/css/main.css' type='text/css'>
+    <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Inconsolata' type='text/css'>
+  </head>
 
-<body>
-<div id='content'>
-  <div id='header' class='d-flex position-absolute'>
-    <div id='header-inner' class=''>
-      <h1 class="m-0">joeysapp</h1>
-      <a
-				href='https://github.com/joeysapp'
-				target="blank" rel="noopener"
-			>
-				github
-			</a>
-      <a
-				href='https://open.spotify.com/user/jsphsapp'
-				target="blank" rel="noopener"
-			>
-				spotify
-			</a>
-      <a
-				href='https://last.fm/user/joeysapp'
-				target="blank" rel="noopener"
-			>
-				lastfm
-			</a>
+  <body>
+    <div id='content'>
+      <div id='header' class='d-flex position-absolute'>
+        <div id='header-inner' class=''>
+          <h1 class="m-0">joeysapp</h1>
+          <a
+	    href='https://github.com/joeysapp'
+	    target="blank" rel="noopener"
+          >
+	    github
+          </a>
+          <a
+	    href='https://open.spotify.com/user/jsphsapp'
+	    target="blank" rel="noopener"
+          >
+	    spotify
+          </a>
+          <a
+	    href='https://last.fm/user/joeysapp'
+	    target="blank" rel="noopener"
+          >
+	    lastfm
+          </a>
+        </div>
+      </div>
+      <div id='container'></div>     
     </div>
-  </div>
-  <div id='container'></div>
-	<div id='controls' class='p-1 d-flex flex-row position-absolute bg-white' style='visibility: hidden'>
-		<div class="d-flex flex-column" style="width: 33%">
-			<button type='button' class='btn btn-danger' id='decSpeed' disabled>slow down</button>
-			<button type='button' class='btn btn-danger'  id='decDiv'>zoom out</button>
-		</div>
-		<div class='d-flex flex-column ml-2 mt-2' style='width: 33%;'>
-			<div class='d-flex'><b>pos=</b><div id="pos">[0.00, 0.00]</div></div>
-			<div class='d-flex'><b>vel=</b><div id="vel">[0.00, 0.00]</div></div>
-			<div class='d-flex'><b>zoom=</b><div id="div">0</div></div>
-			<div class='d-flex'><b>Δtime=</b><div id="dtime">0</div></div>		
-
-		</div>
-		<div class="d-flex flex-column" style="width: 40%">
-			
-		</div>
-		<div class="d-flex flex-column" style="width: 33%">
-			<button type='button' class='btn btn-success' id='incSpeed' disabled>speed up</button>
-			<button type='button' class='btn btn-success'  id='incDiv'>zoom in</button>
-		</div>
-	</div>
-</div>
-<script src='src/js/index.js'></script>
-</body>
-
+    <script src='src/js/m.js'></script>
+  </body>
+</html>
