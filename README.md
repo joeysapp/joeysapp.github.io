@@ -1,2 +1,2 @@
 # joeysapp.github.io
-Personal website
+personal website where I try to induce seizures with emojis
