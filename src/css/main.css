@@ -1,8 +1,9 @@
 body, html {
     overflow: hidden;
-    font-family: Courier New;
+    font-family: monospace;
     color: white;
-    background-color: black;
+    background-color: rgb(41, 21, 21);
+    letter-spacing: 0.05rem;
 }
 
 #content {
@@ -26,4 +27,9 @@ body, html {
     user-select: none;
     font-size: 12pt;
     line-height: 6px;
+}
+
+#container.emojis {
+    line-height: 18px;
+    font-size: 18px;
 }

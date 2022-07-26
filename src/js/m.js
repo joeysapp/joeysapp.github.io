@@ -49,17 +49,24 @@ function Node() {
 
   Node.prototype.update = function() {
     this.vel.add(this.acc);
-    this.vel.mult(0.93);
+    this.vel.mult(0.91);
     this.pos.add(this.vel);
     this.acc.mult(0);
   }
 }
 
+let src = [];
+let idx = 0;
+const getSrc = () => {
+  idx = Math.floor(Math.random()*emoji1.length);
+  amt = Math.min(100, Math.floor(Math.random()*emoji1.length));
+  src = emoji1.slice(idx, idx + amt);
+  // src = shuffle(src);
+}
+
 const m = () => {
   const ua = navigator.userAgent;
   let text = '';
-  let height = Math.floor((window.innerHeight)/6);
-  let width =  Math.floor((window.innerWidth)/2.4);
   
   const head = new Node();
   const gravity = new Vector(-1, 0, 0);
@@ -67,13 +74,19 @@ const m = () => {
   let simplex = new SimplexNoise(seed);
   console.log(head);
 
+  // setInterval(() => {
+  //  getSrc();
+  // }, 500);
+  getSrc();
   setInterval(() => {
     seed = Math.floor(Math.random()*65536);
 
     head.pos = new Vector(Math.random()*65536, Math.random()*65536, Math.random()*65536);
-    head.xdiv = 16 + Math.random()*128;
-    head.ydiv = 16 + Math.random()*128;
-    head.zdiv = 16 + Math.random()*128;
+    head.xdiv = 64 + Math.random()*128;
+    head.ydiv = 64 + Math.random()*128;
+    head.zdiv = 64 + Math.random()*128;
+
+    getSrc();
   }, 2500);
 
   setInterval(() => {
@@ -84,7 +97,7 @@ const m = () => {
     let theta = map(noise, -1, 1, 0, Math.PI);
     let phi = map(noise, -1, 1, 0, Math.PI * 2.0);
 
-    let r = 0.2;
+    let r = 0.005;
     let nx = r * Math.cos(theta) * Math.sin(phi);
     let ny = r * Math.sin(theta) * Math.sin(phi);
     let nz = r * Math.cos(theta);
@@ -95,22 +108,27 @@ const m = () => {
 
     // console.log(x, y, z);
     // console.log(head.vel);
-
+    let height = Math.floor((window.innerHeight)/8);
+    let width =  Math.floor((window.innerWidth)/16);
     let string = '';
-    for (let wx = -width/2; wx <= width/2; wx += 1) {
-      for (let wy = -height/2; wy <= height/2; wy += 1) {
+    for (let wy = -height/2; wy <= height/2; wy += 1) {
+      for (let wx = -width/2; wx <= width/2; wx += 1) {
         let char = '';
         let n = simplex.noise3D((x+wx)/xdiv, (y+wy)/ydiv, (z+0)/zdiv);
+        // unicode chars
         // n = map(n, -1, 1, 161, 1000);
         // n = map(n, -1, 1, 700, 900);
-        n = map(n, -1, 1, 600, 800);
-        char = Math.floor(n);
-        string += String.fromCharCode(parseInt(n, 10));
+        // n = map(n, -1, 1, 600, 800);
+        // string += String.fromCharCode(parseInt(Math.floor(n), 10));
+        // emojis
+        n = map(n, -1, 1, 0, src.length);
+
+        string += src[Math.floor(n)];
       }
       string += '\n';
     }
     document.getElementById('container').innerHTML = string;
-  }, 5);
+  }, 10);
 };
 
 const map = (v, vlow, vhigh, low, high) => {
@@ -118,7 +136,7 @@ const map = (v, vlow, vhigh, low, high) => {
 };
 
 const shuffle = (array) => {
-  let idx = array.length, temporaryValue, randomIndex;
+  let currentIndex = array.length, temporaryValue, randomIndex;
   while (0 !== currentIndex) {
     
     // Pick a remaining element...
