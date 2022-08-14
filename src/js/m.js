@@ -10,7 +10,15 @@ function Vector(x, y, z, args) {
   this.z = z;
 
   Vector.prototype.toString = function() {
-    return `(${this.x} ${this.y} ${this.z})`;
+    const p = 6;
+    let _x = (this.x.toFixed(p).padEnd(p, '0'));
+    let _y = (this.y.toFixed(p).padEnd(p, '0'));
+    let _z = (this.z.toFixed(p).padEnd(p, '0'));
+    // handle xx. and -0.xx being out of line
+    _x = _x.padStart(p + 3, '0');
+    _y = _y.padStart(p + 3, '0');
+    _z = _z.padStart(p + 3, '0');
+    return `(${_x} ${_y} ${_z})`;
   }
 
   Vector.prototype.add = function(v) {
@@ -30,16 +38,24 @@ function Vector(x, y, z, args) {
     this.y *= v;
     this.z *= v;
   }
+
+  Vector.prototype.mag = () => {
+    const _mag = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
+    return _mag;
+  }
 }
 
 function Node() {
   this.pos = new Vector(42, 0, 0);
   this.vel = new Vector(0, 0, 0);
   this.acc = new Vector(0, 0, 0);
+
+  this.mass = .5; // acc divided by this
+  this.drag = 0.95; // vel reduced by this
+
   this.xdiv = 32;
   this.ydiv = 32;
   this.zdiv = 32;
-  this.mass = 1.0;
 
   Node.prototype.applyForce = function(force) {
     // make a new force every loop?
@@ -47,51 +63,81 @@ function Node() {
     this.acc.add(force);
   };
 
-  Node.prototype.update = function() {
+  Node.prototype.randomize = ({ options }) => {
+    options = {
+      pos: true,
+      vel: true,
+      acc: true,
+      ndiv: true,
+      mass: true,
+      drag: true,
+      ...options
+    };
+  };
+
+  Node.prototype.update = () => {
     this.vel.add(this.acc);
-    this.vel.mult(0.91);
+    this.vel.mult(this.drag);
     this.pos.add(this.vel);
     this.acc.mult(0);
+  };
+
+  Node.prototype.log = function() {
+    const _mag = this.vel.mag();
+    const _velRed = map((1 - _mag*100) / 1, 0, 1, 0, 255);
+    const _velCol = `rgb(255, ${_velRed}, ${_velRed})`;
+    const _string = `%cpos: ${this.pos.toString()}\n%cvel: ${this.vel.toString()}\nmag: ${_mag}`;
+    console.log(_string, 'color: white', `color: ${_velCol}`);
+    // console.log(_velRed, _velCol);
   }
 }
 
-let src = [];
-let idx = 0;
-const getSrc = () => {
-  idx = Math.floor(Math.random()*emoji1.length);
-  amt = Math.min(100, Math.floor(Math.random()*emoji1.length));
-  src = emoji1.slice(idx, idx + amt);
-  // src = shuffle(src);
-}
+const populateMap = ((shuffle = false) => {
+  let _map = [];
+  let _src = emoji1;
 
-const m = () => {
-  const ua = navigator.userAgent;
+  // Random distribution
+  const idx = Math.floor(Math.random() * _src.length);
+  const amt = Math.min(100, Math.floor(Math.random() * _src.length));
+
+  _map = emoji1.slice(idx, idx + amt);
+  if (shuffle) _map = shuffle(src);
+
+  return _map;
+});
+
+const loop = (() => {
+  let characterMap = populateMap();; 
   let text = '';
-  
-  const head = new Node();
+
+  const traveler = new Node();
   const gravity = new Vector(-1, 0, 0);
+  const wind = new Vector(0, 0.5, 0.5);
 
   let simplex = new SimplexNoise(seed);
-  console.log(head);
+  const ua = navigator.userAgent;
 
+  // Every 2.5s, randomize: [ position, noise_div, characterMap ]
+  // const randomizeInterval = 2500;
   // setInterval(() => {
-  //  getSrc();
-  // }, 500);
-  getSrc();
+  //   seed = Math.floor(Math.random()*65536);
+  // 
+  //   traveler.pos = new Vector(Math.random()*65536, Math.random()*65536, Math.random()*65536);
+  //   traveler.xdiv = 64 + Math.random()*128;
+  //   traveler.ydiv = 64 + Math.random()*128;
+  //   traveler.zdiv = 64 + Math.random()*128;
+  // 
+  //   populateMap();
+  // }, randomizeInterval);
+
+  // Every 10ms, look at position and get a 'Random simplex' force vector RV from the traveler's pos. 
+  // 1. applyForce ( traveler.acc = (RV) * traveler.mass)
+  // 2. update ( traveler.vel += traveler.acc, 
+  let updateInterval = 10;
+  let updateCt = 0;
   setInterval(() => {
-    seed = Math.floor(Math.random()*65536);
-
-    head.pos = new Vector(Math.random()*65536, Math.random()*65536, Math.random()*65536);
-    head.xdiv = 64 + Math.random()*128;
-    head.ydiv = 64 + Math.random()*128;
-    head.zdiv = 64 + Math.random()*128;
-
-    getSrc();
-  }, 2500);
-
-  setInterval(() => {
-    const { x, y, z } = head.pos;
-    const { xdiv, ydiv, zdiv } = head;
+    const { x, y, z } = traveler.pos;
+    const { xdiv, ydiv, zdiv } = traveler;
     let noise = simplex.noise3D((x+0)/xdiv, (y+0)/ydiv, (z+0)/zdiv);
 
     let theta = map(noise, -1, 1, 0, Math.PI);
@@ -103,33 +149,34 @@ const m = () => {
     let nz = r * Math.cos(theta);
 
     const simplexForce = new Vector(nx, ny, nz);
-    head.applyForce(simplexForce);
-    head.update();
+    traveler.applyForce(simplexForce);
+    traveler.update();
+    if (updateCt % 67 === 0) traveler.log();
 
-    // console.log(x, y, z);
-    // console.log(head.vel);
-    let height = Math.floor((window.innerHeight)/8);
-    let width =  Math.floor((window.innerWidth)/16);
+    const height = Math.floor((window.innerHeight)/8.);
+    const width =  Math.floor((window.innerWidth)/16.);
     let string = '';
-    for (let wy = -height/2; wy <= height/2; wy += 1) {
-      for (let wx = -width/2; wx <= width/2; wx += 1) {
-        let char = '';
-        let n = simplex.noise3D((x+wx)/xdiv, (y+wy)/ydiv, (z+0)/zdiv);
+    for (let i = -height/2; i < height/2; i += 1) {
+      for (let j = -width/2; j < width/2; j += 1) {
+        let n = simplex.noise3D((x+i)/xdiv, (y+j)/ydiv, (z+0)/zdiv);
+
         // unicode chars
         // n = map(n, -1, 1, 161, 1000);
         // n = map(n, -1, 1, 700, 900);
         // n = map(n, -1, 1, 600, 800);
         // string += String.fromCharCode(parseInt(Math.floor(n), 10));
         // emojis
-        n = map(n, -1, 1, 0, src.length);
 
-        string += src[Math.floor(n)];
+        let mappedN = map(n, -1, 1, 0, characterMap.length);
+        mappedN = Math.floor(mappedN);
+        string += characterMap[mappedN];
       }
       string += '\n';
     }
     document.getElementById('container').innerHTML = string;
-  }, 10);
-};
+    updateCt++;
+  }, updateInterval);
+})();
 
 const map = (v, vlow, vhigh, low, high) => {
   return ((v - vlow)/(vhigh - vlow)) * (high - low) + low;
@@ -150,6 +197,3 @@ const shuffle = (array) => {
   }
   return array;
 }
-
-
-m();
