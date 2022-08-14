@@ -1,10 +1,7 @@
 // import src from './emojis.js';
 // import perlin from './perlin.js';
 // import simplex from './simplex.js';
-
-let seed = Math.floor(Math.random()*65536);
-
-function Vector(x, y, z, args) {
+function Vector(x = 0, y = 0, z = 0, args) {
   this.x = x;
   this.y = y;
   this.z = z;
@@ -43,6 +40,15 @@ function Vector(x, y, z, args) {
     const _mag = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
     return _mag;
   }
+
+  Vector.prototype.normalize = (_maxMag) => {
+    const _mag = this.mag();
+    console.log('mag is : ', _mag);
+    const _norm = new Vector(this.x / _mag, this.y / _mag, this.z / _mag);
+    if (_mag > _maxMag) {
+    }
+    return _norm;
+  }
 }
 
 function Node() {
@@ -50,17 +56,18 @@ function Node() {
   this.vel = new Vector(0, 0, 0);
   this.acc = new Vector(0, 0, 0);
 
-  this.mass = .5; // acc divided by this
-  this.drag = 0.95; // vel reduced by this
+  this.mass = 0.6; // acc divided by this
+  this.drag = 0.9; //0.95; // vel reduced by this
+  this.maxMag = 1; // vel can never be greater than this
 
   this.xdiv = 32;
   this.ydiv = 32;
   this.zdiv = 32;
 
   Node.prototype.applyForce = function(force) {
-    // make a new force every loop?
-    force.div(this.mass);
-    this.acc.add(force);
+    let _force = new Vector(force.x, force.y, force.z);
+    _force.div(this.mass);
+    this.acc.add(_force);
   };
 
   Node.prototype.randomize = ({ options }) => {
@@ -73,11 +80,19 @@ function Node() {
       drag: true,
       ...options
     };
+    // todo
   };
 
   Node.prototype.update = () => {
     this.vel.add(this.acc);
     this.vel.mult(this.drag);
+    
+    if (this.vel.mag() > this.maxMag) {
+      // this.vel = this.vel.normalize(this.maxMag);
+      this.vel = new Vector();
+      console.log('reset');
+    }
+
     this.pos.add(this.vel);
     this.acc.mult(0);
   };
@@ -86,9 +101,8 @@ function Node() {
     const _mag = this.vel.mag();
     const _velRed = map((1 - _mag*100) / 1, 0, 1, 0, 255);
     const _velCol = `rgb(255, ${_velRed}, ${_velRed})`;
-    const _string = `%cpos: ${this.pos.toString()}\n%cvel: ${this.vel.toString()}\nmag: ${_mag}`;
+    const _string = `%cpos: ${this.pos.toString()}\n%cvel: ${this.vel.toString()}\nmag: ${_mag}\nacc: ${this.acc.toString()}`;
     console.log(_string, 'color: white', `color: ${_velCol}`);
-    // console.log(_velRed, _velCol);
   }
 }
 
@@ -106,29 +120,33 @@ const populateMap = ((shuffle = false) => {
   return _map;
 });
 
+const _DEBUG = true;
 const loop = (() => {
   let characterMap = populateMap();; 
   let text = '';
 
-  const traveler = new Node();
-  const gravity = new Vector(-1, 0, 0);
-  const wind = new Vector(0, 0.5, 0.5);
-
+  let traveler = new Node();
+  let seed = Math.floor(Math.random()*65536);
   let simplex = new SimplexNoise(seed);
+  let wind = new Vector(Math.random(), Math.random(), Math.random());
+  wind.mult(0.01);
   const ua = navigator.userAgent;
 
   // Every 2.5s, randomize: [ position, noise_div, characterMap ]
-  // const randomizeInterval = 2500;
-  // setInterval(() => {
-  //   seed = Math.floor(Math.random()*65536);
-  // 
-  //   traveler.pos = new Vector(Math.random()*65536, Math.random()*65536, Math.random()*65536);
-  //   traveler.xdiv = 64 + Math.random()*128;
-  //   traveler.ydiv = 64 + Math.random()*128;
-  //   traveler.zdiv = 64 + Math.random()*128;
-  // 
-  //   populateMap();
-  // }, randomizeInterval);
+  const randomizeInterval = 2500;
+  setInterval(() => {
+    seed = Math.floor(Math.random()*65536);
+  
+    traveler.pos = new Vector(Math.random()*65536, Math.random()*65536, Math.random()*65536);
+    traveler.xdiv = 32 + Math.random()*256;
+    traveler.ydiv = 32 + Math.random()*256;
+    traveler.zdiv = 32 + Math.random()*256;
+
+    wind = new Vector(Math.random(), Math.random(), Math.random());
+    wind.mult(0.01);
+  
+    populateMap();
+  }, randomizeInterval);
 
   // Every 10ms, look at position and get a 'Random simplex' force vector RV from the traveler's pos. 
   // 1. applyForce ( traveler.acc = (RV) * traveler.mass)
@@ -150,8 +168,10 @@ const loop = (() => {
 
     const simplexForce = new Vector(nx, ny, nz);
     traveler.applyForce(simplexForce);
+    traveler.applyForce(wind);
     traveler.update();
-    if (updateCt % 67 === 0) traveler.log();
+
+    if (updateCt % 67 === 0 && _DEBUG) traveler.log();
 
     const height = Math.floor((window.innerHeight)/8.);
     const width =  Math.floor((window.innerWidth)/16.);
