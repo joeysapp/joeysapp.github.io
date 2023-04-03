@@ -138,12 +138,14 @@ const loop = (() => {
     seed = Math.floor(Math.random()*65536);
   
     traveler.pos = new Vector(Math.random()*65536, Math.random()*65536, Math.random()*65536);
-    traveler.xdiv = 32 + Math.random()*256;
-    traveler.ydiv = 32 + Math.random()*256;
-    traveler.zdiv = 32 + Math.random()*256;
+    traveler.xdiv = 2 + Math.random()*256;
+    traveler.ydiv = traveler.xdiv;
+    traveler.zdiv = traveler.zdiv;
+    // traveler.ydiv = 2 + Math.random()*256;
+    // traveler.zdiv = 2 + Math.random()*256;
 
     wind = new Vector(Math.random(), Math.random(), Math.random());
-    wind.mult(0.01);
+    wind.mult(0.001);
   
     populateMap();
   }, randomizeInterval);
@@ -161,7 +163,7 @@ const loop = (() => {
     let theta = map(noise, -1, 1, 0, Math.PI);
     let phi = map(noise, -1, 1, 0, Math.PI * 2.0);
 
-    let r = 0.005;
+    let r = 0.0005;
     let nx = r * Math.cos(theta) * Math.sin(phi);
     let ny = r * Math.sin(theta) * Math.sin(phi);
     let nz = r * Math.cos(theta);
