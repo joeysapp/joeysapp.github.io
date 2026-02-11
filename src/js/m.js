@@ -121,8 +121,50 @@ const populateMap = ((shuffle = false) => {
 });
 
 const _DEBUG = true;
+
+// Accelerometer support (opt-in for mobile)
+// Stores normalized gravity vector - device tilt in world space
+// When flat: (0, 0, -1), tilted left: (-1, 0, 0), etc.
+// This representation maps cleanly to quaternion rotation later:
+// q = [cos(θ/2), sin(θ/2) * axis] where axis is cross(down, gravity)
+let gravity = { x: 0, y: 0, z: -1 };
+let accelEnabled = false;
+
+function setupAccelerometer() {
+  const btn = document.getElementById('accel-btn');
+  if (!btn) return;
+
+  if (window.DeviceMotionEvent) {
+    btn.style.display = 'block';
+    btn.onclick = () => {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission().then(response => {
+          if (response === 'granted') enableAccel(btn);
+        }).catch(console.error);
+      } else {
+        enableAccel(btn);
+      }
+    };
+  }
+}
+
+function enableAccel(btn) {
+  accelEnabled = true;
+  btn.textContent = '📱✓';
+  btn.style.opacity = '0.3';
+  window.addEventListener('devicemotion', (e) => {
+    const a = e.accelerationIncludingGravity;
+    if (!a) return;
+    // Normalize the gravity vector (magnitude ~9.8 when stationary)
+    const mag = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z) || 1;
+    gravity.x = a.x / mag;
+    gravity.y = a.y / mag;
+    gravity.z = a.z / mag;
+  });
+}
+
 const loop = (() => {
-  let characterMap = populateMap();; 
+  let characterMap = populateMap();;
   let text = '';
 
   let traveler = new Node();
@@ -131,6 +173,9 @@ const loop = (() => {
   let wind = new Vector(Math.random(), Math.random(), Math.random());
   wind.mult(0.01);
   const ua = navigator.userAgent;
+
+  // Init accelerometer button after DOM ready
+  setTimeout(setupAccelerometer, 0);
 
   // Every 2.5s, randomize: [ position, noise_div, characterMap ]
   const randomizeInterval = 2500;
@@ -171,6 +216,14 @@ const loop = (() => {
     const simplexForce = new Vector(nx, ny, nz);
     traveler.applyForce(simplexForce);
     traveler.applyForce(wind);
+
+    // Tilt device to steer through noise space
+    if (accelEnabled) {
+      const tilt = new Vector(gravity.x, gravity.y, gravity.z);
+      tilt.mult(0.0003);
+      traveler.applyForce(tilt);
+    }
+
     traveler.update();
 
     if (updateCt % 67 === 0 && _DEBUG) traveler.log();
